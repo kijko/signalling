@@ -1,4 +1,4 @@
-package pl.kijko.managers;
+package pl.kijko.sectormanager;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -15,6 +15,12 @@ public class Managers {
         mqttClient.connect();
 
         LOG.info("Managers client connected");
+
+//        SectorManager x = new QualitySectorManager(
+//                4,
+//                new MqttSectorMessagesReceiver(mqttClient),
+//                new MqttSectorMessagesSender(mqttClient)
+//        );
     }
 
 }
