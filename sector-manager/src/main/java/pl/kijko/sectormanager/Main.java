@@ -6,9 +6,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Managers {
+public class Main {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Managers.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws MqttException {
         IMqttClient mqttClient = new MqttClient("tcp://localhost:1883", "managersClient");

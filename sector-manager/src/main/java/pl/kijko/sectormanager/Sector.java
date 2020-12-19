@@ -5,11 +5,23 @@ import java.util.Objects;
 public final class Sector {
 
     public final String id;
-    public final boolean needsHelp;
+    private boolean needsHelp;
 
-    public Sector(String id, boolean needsHelp) {
+    public Sector(String id) {
         this.id = id;
-        this.needsHelp = needsHelp;
+        this.needsHelp = false;
+    }
+
+    public boolean isInNeed() {
+        return this.needsHelp;
+    }
+
+    public synchronized void needsHelp() {
+        this.needsHelp = true;
+    }
+
+    public synchronized void resolved() {
+        this.needsHelp = false;
     }
 
     @Override

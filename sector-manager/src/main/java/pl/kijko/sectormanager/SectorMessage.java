@@ -3,10 +3,12 @@ package pl.kijko.sectormanager;
 import java.util.Objects;
 
 final class SectorMessage {
+    public final String sectorManagerId;
     public final String sectorId;
     public final SectorCommand sectorCommand;
 
-    SectorMessage(String sectorId, SectorCommand sectorCommand) {
+    SectorMessage(String sectorManagerId, String sectorId, SectorCommand sectorCommand) {
+        this.sectorManagerId = sectorManagerId;
         this.sectorId = sectorId;
         this.sectorCommand = sectorCommand;
     }
@@ -16,12 +18,13 @@ final class SectorMessage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SectorMessage that = (SectorMessage) o;
-        return sectorId.equals(that.sectorId) &&
+        return sectorManagerId.equals(that.sectorManagerId) &&
+                sectorId.equals(that.sectorId) &&
                 sectorCommand == that.sectorCommand;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectorId, sectorCommand);
+        return Objects.hash(sectorManagerId, sectorId, sectorCommand);
     }
 }
