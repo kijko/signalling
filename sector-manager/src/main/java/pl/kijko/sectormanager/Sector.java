@@ -37,4 +37,12 @@ public final class Sector {
     public int hashCode() {
         return Objects.hash(id, needsHelp);
     }
+
+    @Override
+    public String toString() {
+        return "Sector{" +
+                "id='" + id + '\'' +
+                ", needsHelp=" + needsHelp +
+                '}';
+    }
 }

@@ -44,10 +44,14 @@ public class DefaultSectorManagerTest {
     void behaveCorrectlyOnHelpMessage() {
         // GIVEN
         AtomicReference<Consumer<SectorMessage>> incomingMessageEvent = new AtomicReference<>();
-        SectorMessageReceiver customReceiver = incomingMessageEvent::set;
+        SectorMessageReceiver customReceiver = newValue -> {
+            incomingMessageEvent.set(newValue);
+
+            return CommunicationResult.SUCCESS;
+        };
 
         manager = new DefaultSectorManager(managerName, numOfSectors, sender, customReceiver);
-        SectorMessage incomingMessage = new SectorMessage(managerName, "1", SectorCommand.HELP);
+        SectorMessage incomingMessage = SectorMessage.toSector(managerName, "1", SectorMessage.SectorCommand.HELP);
 
         var onSectorChange = mock(Consumer.class);
         manager.addSectorChangeListener(onSectorChange);
@@ -69,10 +73,14 @@ public class DefaultSectorManagerTest {
     void behaveCorrectlyOnCancelMessage() {
         // GIVEN
         AtomicReference<Consumer<SectorMessage>> incomingMessageEvent = new AtomicReference<>();
-        SectorMessageReceiver customReceiver = incomingMessageEvent::set;
+        SectorMessageReceiver customReceiver = newValue -> {
+            incomingMessageEvent.set(newValue);
+
+            return CommunicationResult.SUCCESS;
+        };
 
         manager = new DefaultSectorManager(managerName, numOfSectors, sender, customReceiver);
-        SectorMessage incomingMessage = new SectorMessage(managerName, "3", SectorCommand.CANCEL);
+        SectorMessage incomingMessage = SectorMessage.toSector(managerName, "3", SectorMessage.SectorCommand.CANCEL);
 
         var onSectorChange = mock(Consumer.class);
         manager.addSectorChangeListener(onSectorChange);
@@ -105,6 +113,8 @@ public class DefaultSectorManagerTest {
         var onSectorChange = mock(Consumer.class);
         manager.addSectorChangeListener(onSectorChange);
 
+        when(sender.send(any())).thenReturn(CommunicationResult.SUCCESS);
+
         // WHEN
         Sector modifiedSector = manager.resolve(sectorInNeed);
 
@@ -113,13 +123,38 @@ public class DefaultSectorManagerTest {
         assertFalse(sectorInNeed.isInNeed());
 
         verify(sender, times(1))
-                .send(eq(new SectorMessage(managerName, "3", SectorCommand.GOT_IT)));
+                .send(eq(SectorMessage.toSector(managerName, "3", SectorMessage.SectorCommand.GOT_IT)));
         verify(onSectorChange, times(1)).accept(sectorInNeed);
     }
 
     @Test
+    @DisplayName("should not resolve sector because of sending error")
+    void doNotResolve1() {
+        // GIVEN
+        Sector sectorInNeed = manager.getSectors().stream().filter(it -> it.id.equals("3")).findFirst().get();
+        sectorInNeed.needsHelp();
+        assertTrue(sectorInNeed.isInNeed());
+
+        var onSectorChange = mock(Consumer.class);
+        manager.addSectorChangeListener(onSectorChange);
+
+        when(sender.send(any())).thenReturn(CommunicationResult.ERROR);
+
+        // WHEN
+        Sector modifiedSector = manager.resolve(sectorInNeed);
+
+        // THEN
+        assertSame(modifiedSector, sectorInNeed);
+        assertTrue(sectorInNeed.isInNeed());
+
+        verify(sender, times(1))
+                .send(eq(SectorMessage.toSector(managerName, "3", SectorMessage.SectorCommand.GOT_IT)));
+        verify(onSectorChange, times(0)).accept(sectorInNeed);
+    }
+
+    @Test
     @DisplayName("should not send got-it message - change nothing")
-    void doNotResolve() {
+    void doNotResolve2() {
         // GIVEN
         Sector sectorInNeed = manager.getSectors().stream().filter(it -> it.id.equals("3")).findFirst().get();
         assertFalse(sectorInNeed.isInNeed());
@@ -135,7 +170,7 @@ public class DefaultSectorManagerTest {
         assertFalse(sectorInNeed.isInNeed());
 
         verify(sender, times(0))
-                .send(eq(new SectorMessage(managerName, "3", SectorCommand.GOT_IT)));
+                .send(eq(SectorMessage.toSector(managerName, "3", SectorMessage.SectorCommand.GOT_IT)));
         verify(onSectorChange, times(0)).accept(sectorInNeed);
     }
 }

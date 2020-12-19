@@ -4,6 +4,6 @@ import java.util.function.Consumer;
 
 interface SectorMessageReceiver {
 
-    void addMessageHandler(Consumer<SectorMessage> messageConsumer);
+    CommunicationResult addMessageHandler(Consumer<SectorMessage> messageConsumer);
 
 }

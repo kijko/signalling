@@ -1,7 +1,7 @@
 package pl.kijko.sectormanager;
 
-interface SectorMessageSender {
+public interface SectorMessageSender {
 
-    void send(SectorMessage message);
+    CommunicationResult send(SectorMessage message);
 
 }

@@ -1,5 +1,8 @@
 package pl.kijko.sectormanager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -7,6 +10,7 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 
 class DefaultSectorManager implements SectorManager {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultSectorManager.class);
 
     private final String managerName;
     private final List<Sector> sectors;
@@ -68,9 +72,16 @@ class DefaultSectorManager implements SectorManager {
     @Override
     public Sector resolve(Sector sector) {
         if (sector.isInNeed()) {
-            sector.resolved();
-            sender.send(new SectorMessage(getName(), sector.id, SectorCommand.GOT_IT));
-            sectorListeners.forEach(listener -> listener.accept(sector));
+            CommunicationResult result =
+                    sender.send(SectorMessage.toSector(getName(), sector.id, SectorMessage.SectorCommand.GOT_IT));
+
+            if (result == CommunicationResult.SUCCESS) {
+                sector.resolved();
+                sectorListeners.forEach(listener -> listener.accept(sector));
+            } else {
+                LOG.error("Error during resolving sector [sectorId=" + sector.id + "]");
+            }
+
         }
 
         return sector;
