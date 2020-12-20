@@ -5,11 +5,12 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.kijko.sectormanager.gui.JavaSwingSectorManagerGUI;
+import pl.kijko.sectormanager.gui.SectorManagerGUI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.function.Predicate;
 
 public class Main {
@@ -37,21 +38,23 @@ public class Main {
 
         sectorManager.getSectors().forEach(it -> LOG.info(it.toString()));
 
-        BufferedReader reader =
-                new BufferedReader(new InputStreamReader(System.in));
-
-        String input = "";
-        while (!input.equalsIgnoreCase("n")) {
-            input = reader.readLine();
-
-            if (input.equals("1")) {
-                sectorManager.getSectors().forEach(it -> {
-                    if (it.id.equals("1")) {
-                        sectorManager.resolve(it);
-                    }
-                });
-            }
-        }
+        SectorManagerGUI sectorManagerGUI = new JavaSwingSectorManagerGUI(sectorManager);
+        sectorManagerGUI.run();
+//        BufferedReader reader =
+//                new BufferedReader(new InputStreamReader(System.in));
+//
+//        String input = "";
+//        while (!input.equalsIgnoreCase("n")) {
+//            input = reader.readLine();
+//
+//            if (input.equals("1")) {
+//                sectorManager.getSectors().forEach(it -> {
+//                    if (it.id.equals("1")) {
+//                        sectorManager.resolve(it);
+//                    }
+//                });
+//            }
+//        }
     }
 
 }
