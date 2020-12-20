@@ -8,7 +8,7 @@ version '0.0.1'
 jar {
     manifest {
         attributes(
-                'Main-Class': 'pl.kijko.sectormanager.Managers'
+                'Main-Class': 'pl.kijko.sectormanager.Main'
         )
     }
     doFirst {
